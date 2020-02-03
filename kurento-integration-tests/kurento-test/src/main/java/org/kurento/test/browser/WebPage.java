@@ -565,6 +565,7 @@ public class WebPage {
   @SuppressWarnings("deprecation")
   public void addEventListener(final String videoTag, final String eventType,
       final BrowserEventListener eventListener) {
+    log.debug("addEventListener(videoTag: {}, eventType: {})", videoTag, eventType);
     Thread t = new Thread() {
       @Override
       public void run() {
