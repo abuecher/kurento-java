@@ -159,7 +159,7 @@ public class Docker implements Closeable {
 
   public boolean isRunningContainer(String containerName) {
     boolean isRunning = inspectContainer(containerName).getState().getRunning();
-    log.trace("Container {} is running: {}", containerName, isRunning);
+    log.trace("Container '{}' is running: {}", containerName, isRunning);
     return isRunning;
   }
 
@@ -167,10 +167,10 @@ public class Docker implements Closeable {
     boolean exists = true;
     try {
       getClient().inspectImageCmd(imageName).exec();
-      log.trace("Image {} exists", imageName);
+      log.trace("Image '{}' exists", imageName);
 
     } catch (NotFoundException e) {
-      log.trace("Image {} does not exist", imageName);
+      log.trace("Image '{}' does not exist", imageName);
       exists = false;
     }
     return exists;
@@ -181,7 +181,7 @@ public class Docker implements Closeable {
 
     pullImageIfNecessary(imageId, false);
 
-    log.debug("Creating container {}", containerName);
+    log.debug("Creating container '{}'", containerName);
 
     CreateContainerCmd createContainerCmd =
         getClient().createContainerCmd(imageId).withName(containerName).withEnv(env)
@@ -193,7 +193,7 @@ public class Docker implements Closeable {
 
     createContainerCmd.exec();
 
-    log.debug("Container {} started...", containerName);
+    log.debug("Container '{}' started...", containerName);
 
   }
 
@@ -211,7 +211,7 @@ public class Docker implements Closeable {
 
     boolean runningInContainer = isRunningInContainer();
 
-    log.debug("Mounting default folders. Running inside container: {}", runningInContainer);
+    log.debug("Mounting default folders. Running inside container: '{}'", runningInContainer);
 
     if (runningInContainer) {
 
@@ -229,7 +229,7 @@ public class Docker implements Closeable {
         String hostConfigFilePath = Paths.get(workspaceHost)
             .resolve(Paths.get(workspace).relativize(Paths.get(configFilePath))).toString();
 
-        log.debug("Config file volume {}", hostConfigFilePath);
+        log.debug("Config file volume '{}'", hostConfigFilePath);
 
         Volume configVol = new Volume("/opt/selenium/config.json");
 
@@ -271,18 +271,17 @@ public class Docker implements Closeable {
       return;
     }
     if (force || !existsImage(imageId)) {
-      log.debug("Pulling Docker image {} ... please be patient until the process finishes",
-          imageId);
+      log.debug("Pulling Docker image '{}'... please wait", imageId);
       try {
         getClient().pullImageCmd(imageId).exec(new PullImageResultCallback()).awaitCompletion();
       }
       catch (Exception e) {
-        log.warn("Exception pulling image {}", imageId, e);
+        log.warn("Exception pulling image '{}'", imageId, e);
       }
-      log.debug("Image {} downloaded", imageId);
+      log.debug("Image '{}' downloaded", imageId);
 
     } else {
-      log.debug("Image {} already exists", imageId);
+      log.debug("Image '{}' already exists", imageId);
     }
   }
 
@@ -292,13 +291,13 @@ public class Docker implements Closeable {
 
   public void startContainer(String containerName) {
     if (!isRunningContainer(containerName)) {
-      log.debug("Starting container {}", containerName);
+      log.debug("Starting container '{}'", containerName);
 
       getClient().startContainerCmd(containerName).exec();
 
-      log.debug("Started container {}", containerName);
+      log.debug("Started container '{}'", containerName);
     } else {
-      log.debug("Container {} is already started", containerName);
+      log.debug("Container '{}' is already started", containerName);
     }
   }
 
@@ -335,11 +334,11 @@ public class Docker implements Closeable {
 
   public void stopContainer(String containerName, boolean withRecording) {
     if (isRunningContainer(containerName)) {
-      log.debug("Stopping container {}", containerName);
+      log.debug("Stopping container '{}'", containerName);
 
       if (withRecording) {
         String stopRecordingOutput = execCommand(containerName, true, "stop-video-recording.sh");
-        log.debug("Stopping recording in container {}:", containerName, stopRecordingOutput);
+        log.debug("Stopping recording in container '{}':", containerName, stopRecordingOutput);
 
         try {
           // Wait for FFMPEG to finish writing recording file
@@ -359,7 +358,7 @@ public class Docker implements Closeable {
       getClient().stopContainerCmd(containerName).exec();
 
     } else {
-      log.debug("Container {} is not running", containerName);
+      log.debug("Container '{}' is not running", containerName);
     }
   }
 
@@ -380,7 +379,7 @@ public class Docker implements Closeable {
 
   public void listFolderInContainer(String containerName, String folderName) {
     String lsRecordingsFolder = execCommand(containerName, true, "ls", "-la", folderName);
-    log.debug("List of folder {} in container {}:\n{}", folderName, containerName,
+    log.debug("List of folder '{}' in container '{}':\n{}", folderName, containerName,
         lsRecordingsFolder);
   }
 
@@ -391,7 +390,7 @@ public class Docker implements Closeable {
   }
 
   public void removeContainer(String containerName) {
-    log.debug("Removing container {}", containerName);
+    log.debug("Removing container '{}'", containerName);
     boolean removed = false;
     int count = 0;
     do {
@@ -407,7 +406,7 @@ public class Docker implements Closeable {
               containerName, e.getMessage());
         }
         try {
-          log.trace("Waiting for removing {}. Times: {}", containerName, count);
+          log.trace("Waiting for removing '{}'. Times: {}", containerName, count);
           Thread.sleep(WAIT_CONTAINER_POLL_TIMEOUT);
         } catch (InterruptedException e1) {
           // Nothing to do
@@ -438,7 +437,7 @@ public class Docker implements Closeable {
     }
 
     createContainerCmd.exec();
-    log.debug("Container {} started...", nodeName);
+    log.debug("Container '{}' started...", nodeName);
 
 
     // Start node if stopped
@@ -456,17 +455,17 @@ public class Docker implements Closeable {
   private void logMounts(String containerId) {
     InspectContainerResponse exec = getClient().inspectContainerCmd(containerId).exec();
     List<Mount> mounts = exec.getMounts();
-    log.debug("There are {} mount(s) in the container {}:", mounts.size(), containerId);
+    log.debug("There are {} mount(s) in the container '{}':", mounts.size(), containerId);
     for (int i = 0; i < mounts.size(); i++) {
       Mount mount = mounts.get(i);
-      log.debug("{}) {} -> {} ({})", i + 1, mount.getSource(), mount.getDestination(), mount.getMode());
+      log.debug("{}) {} -> {} (mode: '{}')", i + 1, mount.getSource(), mount.getDestination(), mount.getMode());
     }
   }
 
   private void logNetworks(String containerId) {
       Map<String, ContainerNetwork> networks = getClient().inspectContainerCmd(containerId).exec().getNetworkSettings().getNetworks();
       int networksSize = networks.size();
-      log.debug("There are {} network(s) in the container {}", networksSize, containerId);
+      log.debug("There are {} network(s) in the container '{}'", networksSize, containerId);
       if (networksSize == 0) {
           return;
       }
@@ -483,11 +482,11 @@ public class Docker implements Closeable {
       String recordingName = KurentoTest.getSimpleTestName() + "-" + browserId + "-recording";
       recordingNameMap.put(containerName, recordingName);
 
-      log.debug("Starting recording in container {} (browser {}) (target file {})", containerName,
+      log.debug("Starting recording in container '{}' (browser '{}') (target file '{}')", containerName,
           browserId, recordingName);
       String startRecordingOutput = execCommand(containerName, false, "start-video-recording.sh",
           "-n", recordingName);
-      log.debug("Recording in container {} started (command result {})", containerName, startRecordingOutput);
+      log.debug("Recording in container '{}' started (command result '{}')", containerName, startRecordingOutput);
     }
   }
 
@@ -514,7 +513,7 @@ public class Docker implements Closeable {
 
     createContainerCmd.exec();
 
-    log.debug("Container {} started...", nodeName);
+    log.debug("Container '{}' started...", nodeName);
 
     // Start node if stopped
     startContainer(nodeName);
@@ -554,7 +553,7 @@ public class Docker implements Closeable {
       if (!isRunning) {
         try {
           // Wait WAIT_HUB_POLL_TIME ms
-          log.debug("Container {} is not still running ... waiting {} ms", containerName,
+          log.debug("Container '{}' is not still running ... waiting {} ms", containerName,
               WAIT_CONTAINER_POLL_TIME);
           Thread.sleep(WAIT_CONTAINER_POLL_TIME);
 
@@ -614,7 +613,7 @@ public class Docker implements Closeable {
   public String getContainerIpAddress() {
     if (isRunningInContainer()) {
       String ipAddr = getContainerNetworks().values().iterator().next().getIpAddress();
-      log.trace("Docker container IP address {}", ipAddr);
+      log.trace("Docker container IP address '{}'", ipAddr);
       return ipAddr;
     } else {
       throw new DockerClientException(
@@ -626,7 +625,7 @@ public class Docker implements Closeable {
       if (isRunningInContainer()) {
           Map<String, ContainerNetwork> networks = inspectContainer(getContainerName()).getNetworkSettings()
               .getNetworks();
-          log.trace("Docker container networks {}", networks);
+          log.trace("Docker container networks '{}'", networks);
           return networks;
       } else {
           throw new DockerClientException(
@@ -647,7 +646,7 @@ public class Docker implements Closeable {
           for (InterfaceAddress f : iface.getInterfaceAddresses()) {
             if (f.getAddress().isSiteLocalAddress()) {
               String addr = f.getAddress().toString();
-              log.debug("Host IP for container is {}", addr);
+              log.debug("Host IP for container is '{}'", addr);
               return addr;
             }
           }
@@ -687,7 +686,7 @@ public class Docker implements Closeable {
       output = Shell.runAndWaitString("ping -c 1 " + ipAddress);
     } while (!output.contains("Destination Host Unreachable"));
 
-    log.debug("Ip address generated: {}", ipAddress);
+    log.debug("Ip address generated: '{}'", ipAddress);
     return ipAddress;
   }
 
@@ -701,7 +700,7 @@ public class Docker implements Closeable {
     try {
       loggingCallback.awaitCompletion();
     } catch (InterruptedException e) {
-      log.warn("Interrupted while downloading logs for container {}", containerName);
+      log.warn("Interrupted while downloading logs for container '{}'", containerName);
     }
   }
 
@@ -749,7 +748,7 @@ public class Docker implements Closeable {
       }
       output = new String(outputStream.toByteArray());
     } catch (InterruptedException e) {
-      log.warn("Exception executing command {} on container {}", Arrays.toString(command),
+      log.warn("Exception executing command '{}' on container '{}'", Arrays.toString(command),
           containerId, e);
     }
 
@@ -758,13 +757,13 @@ public class Docker implements Closeable {
 
 
   public void copyFileFromContainer(String containerName, String containerFile, String hostFolder) {
-    log.trace("Copying {} from container {} to host folder {}", containerFile, containerName,
+    log.trace("Copying '{}' from container '{}' to host folder '{}'", containerFile, containerName,
         hostFolder);
     try (TarArchiveInputStream tarStream = new TarArchiveInputStream(
         client.copyArchiveFromContainerCmd(containerName, containerFile).exec())) {
       unTar(tarStream, new File(hostFolder));
     } catch (Exception e) {
-      log.warn("Exception getting tar file from container {}", e.getMessage());
+      log.warn("Exception getting tar file from container '{}'", e.getMessage());
     }
   }
 
@@ -784,7 +783,7 @@ public class Docker implements Closeable {
         fos = new FileOutputStream(curfile);
         IOUtils.copy(tis, fos);
       } catch (Exception e) {
-        log.warn("Exception extracting {} to {}", tis, destFolder, e);
+        log.warn("Exception extracting '{}' to '{}'", tis, destFolder, e);
       } finally {
         try {
           if (fos != null) {
@@ -793,7 +792,7 @@ public class Docker implements Closeable {
             fos.close();
           }
         } catch (IOException e) {
-          log.warn("Exception closing {}", fos, e);
+          log.warn("Exception closing '{}'", fos, e);
         }
       }
     }

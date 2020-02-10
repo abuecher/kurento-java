@@ -190,7 +190,7 @@ public class Browser implements Closeable {
 
   public void init() {
 
-    log.debug("Starting browser {}", getId());
+    log.debug("Starting browser '{}'", getId());
 
     Class<? extends WebDriver> driverClass = browserType.getDriverClass();
 
@@ -426,7 +426,7 @@ public class Browser implements Closeable {
   private void createDriver(DesiredCapabilities capabilities, Object options)
       throws MalformedURLException {
 
-    log.debug("Creating driver in scope {} for browser '{}'", scope, id);
+    log.debug("Creating driver in scope '{}' for browser '{}'", scope, id);
 
     if (scope == BrowserScope.SAUCELABS) {
       createSaucelabsDriver(capabilities);
