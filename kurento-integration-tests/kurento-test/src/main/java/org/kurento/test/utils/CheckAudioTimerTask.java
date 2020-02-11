@@ -49,7 +49,7 @@ public class CheckAudioTimerTask extends TimerTask {
     count++;
 
     if (lastTimestamp != 0) {
-      log.debug("Total audio packets received:{} in {} ms",
+      log.debug("Total audio packets received: {} in {} ms",
           (currentPacketsReceived - lastPacketsReceived), diffTimestamp);
     }
 

@@ -320,13 +320,15 @@ public class WebPage {
       if (browser != null && browser.getWebDriver() != null) {
         out = (Map<String, Object>) browser.executeScript("return kurentoTest.rtcStats;");
 
-        log.debug(">>>>>>>>>> kurentoTest.rtcStats {} {}", browser.getId(), out);
+        log.debug("kurentoTest.rtcStats, browser: '{}', stats: '{}'", browser.getId(),
+            out.toString());
       }
     } catch (WebDriverException we) {
       // If client is not ready to gather rtc statistics, we just log it
       // as warning (it is not an error itself)
-      log.warn("Client does not support RTC statistics" + " (variable rtcStats is not defined)");
+      log.warn("Client does not support RTC stats (variable 'rtcStats' is not defined)");
     }
+
     return new PeerConnectionStats(out);
   }
 

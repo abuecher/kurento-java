@@ -177,17 +177,17 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
             browserLogs.put(browserId,
                 webDriver.manage().logs().get(LogType.BROWSER));
           } else {
-            log.warn("It was not possible to recover logs for {} "
+            log.warn("It was not possible to recover logs for '{}' "
                 + "since browser is no longer available (maybe "
                 + "it has been closed manually or crashed)", browserId);
           }
         } catch (Exception e) {
-          log.warn("Exception getting logs {}", browserId, e);
+          log.warn("Exception getting logs from browser '{}'", browserId, e);
         }
         try {
           browser.close();
         } catch (Exception e) {
-          log.warn("Exception closing browser {}", browserId, e);
+          log.warn("Exception closing browser '{}'", browserId, e);
         }
       }
     }
@@ -317,7 +317,7 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
     long timeoutMillis = TimeUnit.MILLISECONDS.convert(timeout, TimeUnit.SECONDS);
     long endTimeMillis = System.currentTimeMillis() + timeoutMillis;
 
-    log.debug("Waiting for {} to be reachable (timeout {} seconds)", url, timeout);
+    log.debug("Waiting for URL '{}' to be reachable (timeout: {} seconds)", url, timeout);
 
     try {
       TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
@@ -358,7 +358,7 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
 
           break;
         } catch (SSLHandshakeException | SocketException e) {
-          log.warn("Error {} waiting URL {}, trying again in 1 second", e.getMessage(), url);
+          log.warn("Error: {}, waiting URL '{}', trying again in 1 second", e.getMessage(), url);
           // Polling to wait a consistent SSL state
           Thread.sleep(1000);
         }
@@ -376,7 +376,7 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
           + e.getClass().getName() + ", " + e.getMessage() + ")");
     }
 
-    log.debug("URL {} already reachable", url);
+    log.debug("URL '{}' already reachable", url);
   }
 
   public void waitSeconds(long waitTime) {
@@ -430,8 +430,8 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
       final Map<String, Map<String, Object>> viewer) throws InterruptedException, IOException {
 
     log.debug("Processing OCR and stats");
-    log.trace("Presenter {} : {}", presenter.size(), presenter.keySet());
-    log.trace("Viewer {} : {}", viewer.size(), viewer.keySet());
+    log.trace("Presenter {}: {}", presenter.size(), presenter.keySet());
+    log.trace("Viewer {}: {}", viewer.size(), viewer.keySet());
 
     final Table<Integer, Integer, String> resultTable = HashBasedTable.create();
     final int numRows = presenter.size();
@@ -623,7 +623,7 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
         minDiff = diff;
       }
     }
-    log.warn("Not matching key for {} [min difference {}]", key, minDiff);
+    log.warn("Not matching key for '{}' [min difference {}]", key, minDiff);
     return null;
   }
 
@@ -707,7 +707,7 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
     File y4m = new File(tmpFolder.toString() + File.separator + inputFile.getName() + Y4M);
     String[] ffmpegCommand = { "ffmpeg", "-i", inputFile.toString(), "-f", "yuv4mpegpipe", "-r",
         parseFps(fps), y4m.toString() };
-    log.debug("Running command to convert to raw: {}", Arrays.toString(ffmpegCommand));
+    log.debug("Running command to convert to raw: '{}'", Arrays.toString(ffmpegCommand));
     Shell.runAndWait(ffmpegCommand);
     return y4m;
   }
@@ -717,7 +717,7 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
     String qpsnrCommand = "qpsnr -a " + videoAlgorithm + " -o blocksize=" + blocksize + ":fpa="
         + parseFps(fps) + " -r " + inputFile1.getAbsolutePath() + " "
         + inputFile2.getAbsolutePath();
-    log.debug("Running qpsnr to calcule video quality ({}): {}", videoAlgorithm, qpsnrCommand);
+    log.debug("Running QPSNR to calcule video quality ({}): '{}'", videoAlgorithm, qpsnrCommand);
 
     String outputShell[] = Shell.runAndWait("sh", "-c", qpsnrCommand).split("\\r?\\n");
     Multimap<String, Object> outputMap = ArrayListMultimap.create();
@@ -746,7 +746,7 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
         tmpFolder.toString() + File.separator + "cut-" + inputFile.getName());
     String[] command = { "ffmpeg", "-i", inputFile.getAbsolutePath(), "-ss", df.format(cutTime),
         cutVideoFile.getAbsolutePath() };
-    log.debug("Running command to cut video: {}", Arrays.toString(command));
+    log.debug("Running command to cut video: '{}'", Arrays.toString(command));
     Shell.runAndWait(command);
     return cutVideoFile;
   }
@@ -758,7 +758,7 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
         tmpFolder.toString() + File.separator + "cut-" + inputFile.getName());
     String[] command = { "ffmpeg", "-i", inputFile.getAbsolutePath(), "-ss", df.format(cutTime),
         "-acodec", "copy", "-codec:v", "libvpx", cutVideoFile.getAbsolutePath() };
-    log.debug("Running command to cut video: {}", Arrays.toString(command));
+    log.debug("Running command to cut video: '{}'", Arrays.toString(command));
     Shell.runAndWait(command);
     return cutVideoFile;
   }
@@ -768,7 +768,7 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
         tmpFolder.toString() + File.separator + "trans-" + inputFile.getName());
     String[] command = { "ffmpeg", "-i", inputFile.getAbsolutePath(), "-acodec", "copy", "-codec:v",
         "libvpx", transVideoFile.getAbsolutePath() };
-    log.debug("Running command to transcode video: {}", Arrays.toString(command));
+    log.debug("Running command to transcode video: '{}'", Arrays.toString(command));
     Shell.runAndWait(command);
     return transVideoFile;
   }
@@ -805,13 +805,13 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
 
       log.trace("---> Time comparsion to find cut frame: {} vs {}", ocr1, ocr2);
       if (ocrList2.contains(ocr1)) {
-        log.debug("Found OCR match {} at position {}", ocr1, i);
+        log.debug("Found OCR match '{}' at position {}", ocr1, i);
         // TODO Hack here: if the first video should be cut (presenter), the result is negative.
         // Otherwise the result is positive (cut the second video, i.e. the viewer)
         i *= -1;
         break;
       } else if (ocrList1.contains(ocr2)) {
-        log.debug("Found OCR match {} at position {}", ocr2, i);
+        log.debug("Found OCR match '{}' at position {}", ocr2, i);
         break;
       }
     }
@@ -824,7 +824,7 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
       public void run() {
         String[] command = { "ffmpeg", "-i", inputFile.getAbsolutePath(),
             tmpFolder.toString() + File.separator + inputFile.getName() + "-%03d" + PNG };
-        log.debug("Running command to get frames: {}", Arrays.toString(command));
+        log.debug("Running command to get frames: '{}'", Arrays.toString(command));
         Shell.runAndWait(command);
       }
     };
@@ -854,7 +854,7 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
           return name.toLowerCase().endsWith(ext);
         }
       });
-      log.debug("Number of files with extension {} in {} = {} (expected {})", ext, folder,
+      log.debug("Number of files with extension '{}' in '{}' = {} (expected {})", ext, folder,
           files.length, expectedFilesNumber);
     } while (files.length != expectedFilesNumber);
   }
@@ -866,7 +866,7 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
       table.put(0, columnKey, key);
       Collection<Object> content = column.get(key);
       Iterator<Object> iterator = content.iterator();
-      log.debug("Adding columun {} ({} elements) to table in position {}", key, content.size(),
+      log.debug("Adding columun '{}' ({} elements) to table in position {}", key, content.size(),
           columnKey);
       for (int i = 0; i < content.size(); i++) {
         table.put(i + 1, columnKey, iterator.next().toString());
