@@ -272,7 +272,7 @@ public class Browser implements Closeable {
           hostName = host != null ? host : node;
         }
 
-        log.debug("Protocol: {}, Hostname: {}, Port: {}, Web page type: {}", protocol, hostName,
+        log.debug("URL protocol: '{}', host: '{}', port: {}, web page type: '{}'", protocol, hostName,
             serverPort, webPageType);
 
         try {

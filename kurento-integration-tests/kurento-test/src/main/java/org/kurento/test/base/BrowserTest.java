@@ -355,13 +355,17 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
           connection.setReadTimeout((int) timeoutMillis);
           connection.setRequestMethod("HEAD");
           responseCode = connection.getResponseCode();
-
           break;
+        // } catch (RuntimeException e) {
+        //   log.warn("Error: {}, waiting URL '{}', trying again in 3 seconds", e.getMessage(), url);
+        //   log.warn("URL protocol: '{}', host: '{}', port: '{}', path: '{}'", url.getProtocol(), url.getHost(), url.getPort(), url.getPath());
+        //   Thread.sleep(3000);
         } catch (SSLHandshakeException | SocketException e) {
           log.warn("Error: {}, waiting URL '{}', trying again in 1 second", e.getMessage(), url);
           // Polling to wait a consistent SSL state
           Thread.sleep(1000);
         }
+
         if (System.currentTimeMillis() > endTimeMillis) {
           break;
         }

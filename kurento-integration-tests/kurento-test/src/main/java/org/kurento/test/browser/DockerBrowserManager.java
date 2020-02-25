@@ -306,12 +306,11 @@ public class DockerBrowserManager {
     DockerBrowser browser = browsers.remove(id);
 
     if (browser == null) {
-      log.warn("Browser " + id + " does not exists");
+      log.warn("Nothing to close: browser '{}' didn't exist", id);
       return;
     }
 
     browser.close();
-
   }
 
   private String calculateBrowserImageName(DesiredCapabilities capabilities) {
