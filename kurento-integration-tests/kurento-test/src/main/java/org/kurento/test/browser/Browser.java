@@ -228,21 +228,20 @@ public class Browser implements Closeable {
       // Timeouts
       changeTimeout(timeout);
 
-      log.debug("Browser {} started", getId());
+      log.debug("Browser '{}' started", getId());
 
       calculateUrl();
 
-      log.debug("Browser {} loading url {}", getId(), url);
+      log.debug("Browser '{}' loading URL: '{}'...", getId(), url);
 
       driver.get(url.toString());
       driver.navigate().refresh();
 
-      log.debug("Browser {} initialized", getId());
+      log.debug("...done! Browser '{}' is initialized", getId());
 
     } catch (MalformedURLException e) {
       log.error("MalformedURLException in Browser.init", e);
     }
-
   }
 
   private void calculateUrl() {
@@ -384,7 +383,9 @@ public class Browser implements Closeable {
     if (scope == BrowserScope.LOCAL) {
       WebDriverManager.firefoxdriver().setup();
     }
+
     FirefoxOptions firefoxOptions = new FirefoxOptions();
+
     // This flag avoids granting the access to the camera
     firefoxOptions.addPreference("media.navigator.permission.disabled", true);
 

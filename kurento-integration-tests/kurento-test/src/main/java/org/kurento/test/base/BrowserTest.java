@@ -193,8 +193,9 @@ public abstract class BrowserTest<W extends WebPage> extends KurentoTest {
                 + "it has been closed manually or crashed)", browserId);
           }
         } catch (Exception e) {
-          log.warn("Exception getting logs from browser '{}'", browserId, e);
+          log.warn("Exception getting logs from browser '{}':", browserId, e);
         }
+
         try {
           browser.close();
         } catch (Exception e) {

@@ -583,8 +583,10 @@ public class WebPage {
                 }
               });
           eventListener.onEvent(eventType);
+        } catch (org.openqa.selenium.TimeoutException e) {
+          log.error("~~~ Timeout reached for 'addEventListener()': {}", e.getMessage());
         } catch (Throwable t) {
-          log.error("~~~ Exception in addEventListener {}", t.getMessage());
+          log.error("~~~ Exception calling 'addEventListener()': {}, stack trace:", t.getMessage());
           t.printStackTrace();
           this.interrupt();
           this.stop();
