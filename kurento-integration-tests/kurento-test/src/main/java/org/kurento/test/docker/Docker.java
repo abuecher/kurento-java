@@ -336,7 +336,7 @@ public class Docker implements Closeable {
 
   public void stopContainer(String containerName, boolean withRecording) {
     if (isRunningContainer(containerName)) {
-      log.debug("Stopping container '{}'", containerName);
+      log.debug("Container '{}' is running, need to stop it", containerName);
 
       if (withRecording) {
         String stopRecordingOutput = execCommand(containerName, true, "stop-video-recording.sh");
@@ -361,7 +361,7 @@ public class Docker implements Closeable {
       getClient().killContainerCmd(containerName).exec();
 
     } else {
-      log.debug("Container '{}' is not running", containerName);
+      log.debug("Container '{}' is not running, nothing to do", containerName);
     }
   }
 
