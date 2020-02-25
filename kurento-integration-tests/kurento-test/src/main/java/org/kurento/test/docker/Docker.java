@@ -357,7 +357,8 @@ public class Docker implements Closeable {
         }
       }
 
-      getClient().stopContainerCmd(containerName).exec();
+      log.debug("Kill container '{}'", containerName);
+      getClient().killContainerCmd(containerName).exec();
 
     } else {
       log.debug("Container '{}' is not running", containerName);
